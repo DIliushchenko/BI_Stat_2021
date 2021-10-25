@@ -1,0 +1,220 @@
+---
+title: 'Project #1 BI Stat'
+author: "Dmitrii Iliushchenko"
+date: "October 25, 2021"
+output: html_document
+---
+
+```{r setup, include=FALSE, cache=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Project description
+
+Project was made specially for study in Statistic and R. In this project we use data on participation in the Olympic Games for the last 120 years. The data was taken from Bioinformatics Institute.
+
+## Data description
+
+Will be soon.
+
+## Preparing
+
+Load some libraries for future work: dplyr and ggplot2
+
+```{r message=FALSE}
+library(ggplot2)
+library(dplyr)
+library(knitr)
+library(kableExtra)
+```
+
+### Task 1
+
+Creating function that takes all csv files for our project:
+
+```{r}
+read_all_data <- function(data_path)
+{
+  olimpic_games = data.frame()
+  path_to_data = gsub('report_folder', data_path, getwd())
+  list_files_csv = list.files(path = path_to_data, pattern="*.csv")
+  for ( i in 1:length(list_files_csv))
+  {
+    csv_path = paste(path_to_data, list_files_csv[1],sep='/')
+    df= read.csv(csv_path)
+    olimpic_games = rbind(olimpic_games,df)
+  }
+  return(olimpic_games)
+}
+
+olimpic_data = read_all_data('data_folder')
+
+head(olimpic_data) %>% kable() %>% kable_styling()
+```
+
+### Task 2
+
+```{r}
+
+olimpic_data[is.na(olimpic_data$Medal),]$Medal = 'Non Medalist'
+olimpic_data = olimpic_data[olimpic_data$Event != '',]
+
+olimpic_data = subset(olimpic_data, select = -c(Games, NOC))
+
+```
+
+### Task 3
+
+``` {r }
+olimpic_data %>% 
+  group_by(Sex) %>% 
+  filter(Age == min(Age, na.rm = T)) %>% 
+  slice(1) %>% select(Sex,Age) %>% 
+  kable() %>% 
+  kable_styling(full_width = F, position = 'left')
+```
+### Task 4
+
+``` {r}
+olimpic_data %>% 
+  group_by(Sex) %>% 
+  summarise(Mean_height = as.integer(mean(Height, na.rm = T)), Sd_height = sd(Height, na.rm = T)) %>% 
+  kable() %>% 
+  kable_styling(full_width = F, position = 'left')
+  
+```
+### Task 5
+
+``` {r}
+olimpic_data %>% 
+  filter(Sex == "F" & Year == 2000) %>% 
+  summarise(mean_height = mean(Height, na.rm = T), sd_height = sd(Height, na.rm = T)) %>% 
+  round(1) %>% 
+  kable(col.names = c('Mean Height' , 'Sd Height')) %>% 
+  kable_styling(full_width = F, position = 'left')
+
+```
+
+### Task 6
+
+``` {r}
+olimpic_data %>% 
+  filter(Year == 2006) %>% 
+  filter(Weight == max(Weight, na.rm=T)) %>% 
+  select(Sport) %>% 
+  slice(1) %>% 
+  kable() %>% 
+  kable_styling(full_width = F, position = 'left')
+
+```
+### Task 7
+
+``` {r}
+olimpic_data %>% 
+  filter(Sex == 'F' & Year %in% seq(1980,2010,2) & Medal == 'Gold') %>% 
+  summarise(n = n()) %>% 
+  kable() %>% 
+  kable_styling(position = 'left', full_width = F)
+
+```
+### Task 8 
+
+``` {r}
+olimpic_data %>% 
+  filter(Name == 'John Aalberg') %>% 
+  group_by(Year) %>%
+  tally() %>% 
+  kable() %>% 
+  kable_styling(full_width = F, position = 'left')
+```
+### Task 9
+
+``` {r}
+vec_of_group_age = c(15,25,35,45,55)
+
+olimpic_data %>% 
+  filter(Year == 2008 & Age %in% 15:55) %>% 
+  group_by(Age = cut(Age,vec_of_group_age, include.lowest = TRUE, right = F)) %>% 
+  tally() %>% 
+  kable() %>% 
+  kable_styling(full_width = F, position = 'left')
+```
+### Task 10
+
+``` {r include = FALSE}
+res_10 = olimpic_data %>% 
+  filter(Year == 2002 | Year == 1994) %>% 
+  group_by(Year) %>% 
+  select(Sport) %>% 
+  summarise(n = n()) %>% 
+  mutate(Diff = n - n[1]) %>% 
+  slice(2) %>% select(Diff)
+```
+
+``` {r}
+kable(res_10) %>% 
+  kable_styling(full_width = F, position = 'left')
+```
+
+### Task 11
+
+``` {r include = FALSE}
+res_11 = olimpic_data %>% 
+  filter(Medal != 'Non Medalist' & Medal != '') %>% 
+  group_by(Season,Medal,Team) %>% 
+  summarise(n = n()) %>% 
+  slice_max(order_by = n, n = 3)
+```
+``` {r}
+kable(res_11) %>% 
+  kable_styling(full_width = F, position = 'left')
+```
+
+### Task 12
+
+``` {r}
+olimpic_data %>%
+  filter(Height != is.na(Height)) %>% 
+  mutate(Height_z_scores = (Height - mean(Height)) / sd(Height)) %>% 
+  mutate(Height_z_scores = round(Height_z_scores, 2)) %>% 
+  head() %>% 
+  kable() %>% 
+  kable_styling()
+```
+### Task 13
+
+``` {r}
+olimpic_data %>% 
+  filter(Height != is.na(Height)) %>% 
+  mutate(Height_min_max_scaled = (Height- min(Height)) /(max(Height)-min(Height))) %>% 
+  mutate(Height_min_max_scaled = round(Height_min_max_scaled , 2)) %>% 
+  head() %>% 
+  kable() %>% 
+  kable_styling()
+```
+### Task 14
+
+``` {r include = FALSE}
+res_14 = olimpic_data %>% 
+  filter(Season == 'Winter') %>% 
+  group_by(Sex) %>% 
+  select(Height, Weight, Age) %>% 
+  summarize(mean_height = mean(Height, na.rm = T),
+            sd_height = sd(Height, na.rm = T),
+            median_height = median(Height, na.rm=T),
+            mean_weight = mean(Weight, na.rm = T),
+            sd_Weight = sd(Weight, na.rm = T),
+            median_Weight = median(Weight, na.rm=T),
+            mean_age = mean(Age, na.rm = T),
+            sd_age = sd(Age, na.rm = T),
+            median_age = median(Age, na.rm=T))
+```
+``` {r}
+
+kable(res_14) %>% kable_styling()
+```
+### Task 15
+
+В стадии разработки. Хочется показать, что количество медалей зависит от команды!
+
+
