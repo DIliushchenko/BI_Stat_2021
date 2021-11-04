@@ -184,31 +184,13 @@ pre code {
 </div>
 <div id="preparing" class="section level2">
 <h2>Preparing</h2>
-<p>Load some libraries for future work: dplyr and ggplot2</p>
-<pre class="r"><code>library(ggplot2)
-library(dplyr)
-library(knitr)
-library(kableExtra)</code></pre>
+<p>For our future work load some libraries:</p>
+<p><code>dplyr</code> - work with data frame with easier syntax</p>
+<p><code>ggplot2</code> - great visualization</p>
+<p><code>knitr</code>, <code>kableExtra</code> - work with output in MarkDown</p>
 <div id="task-1" class="section level3">
 <h3>Task 1</h3>
-<p>Creating function that takes all csv files for our project:</p>
-<pre class="r"><code>read_all_data &lt;- function(data_path)
-{
-  olimpic_games = data.frame()
-  path_to_data = gsub(&#39;report_folder&#39;, data_path, getwd())
-  list_files_csv = list.files(path = path_to_data, pattern=&quot;*.csv&quot;)
-  for ( i in 1:length(list_files_csv))
-  {
-    csv_path = paste(path_to_data, list_files_csv[1],sep=&#39;/&#39;)
-    df= read.csv(csv_path)
-    olimpic_games = rbind(olimpic_games,df)
-  }
-  return(olimpic_games)
-}
-
-olimpic_data = read_all_data(&#39;data_folder&#39;)
-
-head(olimpic_data) %&gt;% kable() %&gt;% kable_styling()</code></pre>
+<p>Creating function that takes all csv files for our project an then show the head of created data frame:</p>
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
@@ -547,19 +529,304 @@ NA
 </div>
 <div id="task-2" class="section level3">
 <h3>Task 2</h3>
-<pre class="r"><code>olimpic_data[is.na(olimpic_data$Medal),]$Medal = &#39;Non Medalist&#39;
-olimpic_data = olimpic_data[olimpic_data$Event != &#39;&#39;,]
-
-olimpic_data = subset(olimpic_data, select = -c(Games, NOC))</code></pre>
+<p>How we can see the most of athletes have blank spaces in column <code>Medal</code>, maybe they don’t have any medals. First, let’s change all empty rows with <code>Non Medalist</code>. Then using command <code>olimpic_data[apply(olimpic_data == &quot;&quot;, 1, all),])</code> we can see athletes in which most of the information is empty. I suggest removing them, because we don’t know true information about empty rows in columns, target on the column <code>Event</code> because most athletes don’t have data in this column and others. And finally, we removed columns <code>Games</code> and <code>NOC</code> because they duplicate information from other columns.</p>
+Let’s look at our data frame now:
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:right;">
+ID
+</th>
+<th style="text-align:left;">
+Name
+</th>
+<th style="text-align:left;">
+Sex
+</th>
+<th style="text-align:right;">
+Age
+</th>
+<th style="text-align:right;">
+Height
+</th>
+<th style="text-align:right;">
+Weight
+</th>
+<th style="text-align:left;">
+Team
+</th>
+<th style="text-align:right;">
+Year
+</th>
+<th style="text-align:left;">
+Season
+</th>
+<th style="text-align:left;">
+City
+</th>
+<th style="text-align:left;">
+Sport
+</th>
+<th style="text-align:left;">
+Event
+</th>
+<th style="text-align:left;">
+Medal
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+A Dijiang
+</td>
+<td style="text-align:left;">
+M
+</td>
+<td style="text-align:right;">
+24
+</td>
+<td style="text-align:right;">
+180
+</td>
+<td style="text-align:right;">
+80
+</td>
+<td style="text-align:left;">
+China
+</td>
+<td style="text-align:right;">
+1992
+</td>
+<td style="text-align:left;">
+Summer
+</td>
+<td style="text-align:left;">
+Barcelona
+</td>
+<td style="text-align:left;">
+Basketball
+</td>
+<td style="text-align:left;">
+Basketball Men’s Basketball
+</td>
+<td style="text-align:left;">
+Non Medalist
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+A Lamusi
+</td>
+<td style="text-align:left;">
+M
+</td>
+<td style="text-align:right;">
+23
+</td>
+<td style="text-align:right;">
+170
+</td>
+<td style="text-align:right;">
+60
+</td>
+<td style="text-align:left;">
+China
+</td>
+<td style="text-align:right;">
+2012
+</td>
+<td style="text-align:left;">
+Summer
+</td>
+<td style="text-align:left;">
+London
+</td>
+<td style="text-align:left;">
+Judo
+</td>
+<td style="text-align:left;">
+Judo Men’s Extra-Lightweight
+</td>
+<td style="text-align:left;">
+Non Medalist
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:left;">
+Gunnar Nielsen Aaby
+</td>
+<td style="text-align:left;">
+M
+</td>
+<td style="text-align:right;">
+24
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:left;">
+Denmark
+</td>
+<td style="text-align:right;">
+1920
+</td>
+<td style="text-align:left;">
+Summer
+</td>
+<td style="text-align:left;">
+Antwerpen
+</td>
+<td style="text-align:left;">
+Football
+</td>
+<td style="text-align:left;">
+Football Men’s Football
+</td>
+<td style="text-align:left;">
+Non Medalist
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:left;">
+Edgar Lindenau Aabye
+</td>
+<td style="text-align:left;">
+M
+</td>
+<td style="text-align:right;">
+34
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:left;">
+Denmark/Sweden
+</td>
+<td style="text-align:right;">
+1900
+</td>
+<td style="text-align:left;">
+Summer
+</td>
+<td style="text-align:left;">
+Paris
+</td>
+<td style="text-align:left;">
+Tug-Of-War
+</td>
+<td style="text-align:left;">
+Tug-Of-War Men’s Tug-Of-War
+</td>
+<td style="text-align:left;">
+Gold
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:left;">
+Christine Jacoba Aaftink
+</td>
+<td style="text-align:left;">
+F
+</td>
+<td style="text-align:right;">
+21
+</td>
+<td style="text-align:right;">
+185
+</td>
+<td style="text-align:right;">
+82
+</td>
+<td style="text-align:left;">
+Netherlands
+</td>
+<td style="text-align:right;">
+1988
+</td>
+<td style="text-align:left;">
+Winter
+</td>
+<td style="text-align:left;">
+Calgary
+</td>
+<td style="text-align:left;">
+Speed Skating
+</td>
+<td style="text-align:left;">
+Speed Skating Women’s 500 metres
+</td>
+<td style="text-align:left;">
+Non Medalist
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:left;">
+Christine Jacoba Aaftink
+</td>
+<td style="text-align:left;">
+F
+</td>
+<td style="text-align:right;">
+21
+</td>
+<td style="text-align:right;">
+185
+</td>
+<td style="text-align:right;">
+82
+</td>
+<td style="text-align:left;">
+Netherlands
+</td>
+<td style="text-align:right;">
+1988
+</td>
+<td style="text-align:left;">
+Winter
+</td>
+<td style="text-align:left;">
+Calgary
+</td>
+<td style="text-align:left;">
+Speed Skating
+</td>
+<td style="text-align:left;">
+Speed Skating Women’s 1,000 metres
+</td>
+<td style="text-align:left;">
+Non Medalist
+</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div id="task-3" class="section level3">
 <h3>Task 3</h3>
-<pre class="r"><code>olimpic_data %&gt;% 
-  group_by(Sex) %&gt;% 
-  filter(Age == min(Age, na.rm = T)) %&gt;% 
-  slice(1) %&gt;% select(Sex,Age) %&gt;% 
-  kable() %&gt;% 
-  kable_styling(full_width = F, position = &#39;left&#39;)</code></pre>
 <table class="table" style="width: auto !important; ">
 <thead>
 <tr>
@@ -593,11 +860,6 @@ M
 </div>
 <div id="task-4" class="section level3">
 <h3>Task 4</h3>
-<pre class="r"><code>olimpic_data %&gt;% 
-  group_by(Sex) %&gt;% 
-  summarise(Mean_height = as.integer(mean(Height, na.rm = T)), Sd_height = sd(Height, na.rm = T)) %&gt;% 
-  kable() %&gt;% 
-  kable_styling(full_width = F, position = &#39;left&#39;)</code></pre>
 <table class="table" style="width: auto !important; ">
 <thead>
 <tr>
@@ -640,12 +902,6 @@ M
 </div>
 <div id="task-5" class="section level3">
 <h3>Task 5</h3>
-<pre class="r"><code>olimpic_data %&gt;% 
-  filter(Sex == &quot;F&quot; &amp; Year == 2000) %&gt;% 
-  summarise(mean_height = mean(Height, na.rm = T), sd_height = sd(Height, na.rm = T)) %&gt;% 
-  round(1) %&gt;% 
-  kable(col.names = c(&#39;Mean Height&#39; , &#39;Sd Height&#39;)) %&gt;% 
-  kable_styling(full_width = F, position = &#39;left&#39;)</code></pre>
 <table class="table" style="width: auto !important; ">
 <thead>
 <tr>
@@ -671,13 +927,6 @@ Sd Height
 </div>
 <div id="task-6" class="section level3">
 <h3>Task 6</h3>
-<pre class="r"><code>olimpic_data %&gt;% 
-  filter(Year == 2006) %&gt;% 
-  filter(Weight == max(Weight, na.rm=T)) %&gt;% 
-  select(Sport) %&gt;% 
-  slice(1) %&gt;% 
-  kable() %&gt;% 
-  kable_styling(full_width = F, position = &#39;left&#39;)</code></pre>
 <table class="table" style="width: auto !important; ">
 <thead>
 <tr>
@@ -697,11 +946,6 @@ Skeleton
 </div>
 <div id="task-7" class="section level3">
 <h3>Task 7</h3>
-<pre class="r"><code>olimpic_data %&gt;% 
-  filter(Sex == &#39;F&#39; &amp; Year %in% seq(1980,2010,2) &amp; Medal == &#39;Gold&#39;) %&gt;% 
-  summarise(n = n()) %&gt;% 
-  kable() %&gt;% 
-  kable_styling(position = &#39;left&#39;, full_width = F)</code></pre>
 <table class="table" style="width: auto !important; ">
 <thead>
 <tr>
@@ -721,12 +965,6 @@ n
 </div>
 <div id="task-8" class="section level3">
 <h3>Task 8</h3>
-<pre class="r"><code>olimpic_data %&gt;% 
-  filter(Name == &#39;John Aalberg&#39;) %&gt;% 
-  group_by(Year) %&gt;%
-  tally() %&gt;% 
-  kable() %&gt;% 
-  kable_styling(full_width = F, position = &#39;left&#39;)</code></pre>
 <table class="table" style="width: auto !important; ">
 <thead>
 <tr>
@@ -760,14 +998,6 @@ n
 </div>
 <div id="task-9" class="section level3">
 <h3>Task 9</h3>
-<pre class="r"><code>vec_of_group_age = c(15,25,35,45,55)
-
-olimpic_data %&gt;% 
-  filter(Year == 2008 &amp; Age %in% 15:55) %&gt;% 
-  group_by(Age = cut(Age,vec_of_group_age, include.lowest = TRUE, right = F)) %&gt;% 
-  tally() %&gt;% 
-  kable() %&gt;% 
-  kable_styling(full_width = F, position = &#39;left&#39;)</code></pre>
 <table class="table" style="width: auto !important; ">
 <thead>
 <tr>
@@ -817,8 +1047,6 @@ n
 </div>
 <div id="task-10" class="section level3">
 <h3>Task 10</h3>
-<pre class="r"><code>kable(res_10) %&gt;% 
-  kable_styling(full_width = F, position = &#39;left&#39;)</code></pre>
 <table class="table" style="width: auto !important; ">
 <thead>
 <tr>
@@ -838,8 +1066,6 @@ Diff
 </div>
 <div id="task-11" class="section level3">
 <h3>Task 11</h3>
-<pre class="r"><code>kable(res_11) %&gt;% 
-  kable_styling(full_width = F, position = &#39;left&#39;)</code></pre>
 <table class="table" style="width: auto !important; ">
 <thead>
 <tr>
@@ -1143,13 +1369,6 @@ Germany
 </div>
 <div id="task-12" class="section level3">
 <h3>Task 12</h3>
-<pre class="r"><code>olimpic_data %&gt;%
-  filter(Height != is.na(Height)) %&gt;% 
-  mutate(Height_z_scores = (Height - mean(Height)) / sd(Height)) %&gt;% 
-  mutate(Height_z_scores = round(Height_z_scores, 2)) %&gt;% 
-  head() %&gt;% 
-  kable() %&gt;% 
-  kable_styling()</code></pre>
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
@@ -1467,13 +1686,6 @@ Non Medalist
 </div>
 <div id="task-13" class="section level3">
 <h3>Task 13</h3>
-<pre class="r"><code>olimpic_data %&gt;% 
-  filter(Height != is.na(Height)) %&gt;% 
-  mutate(Height_min_max_scaled = (Height- min(Height)) /(max(Height)-min(Height))) %&gt;% 
-  mutate(Height_min_max_scaled = round(Height_min_max_scaled , 2)) %&gt;% 
-  head() %&gt;% 
-  kable() %&gt;% 
-  kable_styling()</code></pre>
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
@@ -1791,7 +2003,6 @@ Non Medalist
 </div>
 <div id="task-14" class="section level3">
 <h3>Task 14</h3>
-<pre class="r"><code>kable(res_14) %&gt;% kable_styling()</code></pre>
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <thead>
 <tr>

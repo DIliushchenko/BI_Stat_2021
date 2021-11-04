@@ -5,8 +5,8 @@ date: "October 25, 2021"
 output: html_document
 ---
 
-```{r setup, include=FALSE, cache=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
 ```
 
 ## Project description
@@ -19,7 +19,13 @@ Will be soon.
 
 ## Preparing
 
-Load some libraries for future work: dplyr and ggplot2
+For our future work load some libraries: 
+
+`dplyr` - work with data frame with easier syntax
+
+`ggplot2` - great visualization
+
+`knitr`, `kableExtra` - work with output in MarkDown 
 
 ```{r message=FALSE}
 library(ggplot2)
@@ -30,7 +36,7 @@ library(kableExtra)
 
 ### Task 1
 
-Creating function that takes all csv files for our project:
+Creating function that takes all csv files for our project an then show the head of created data frame:
 
 ```{r}
 read_all_data <- function(data_path)
@@ -53,7 +59,7 @@ head(olimpic_data) %>% kable() %>% kable_styling()
 ```
 
 ### Task 2
-
+How we can see the most of athletes have blank spaces in column **Medal**, maybe they don't have any medals. First, let's change all empty rows with *Non Medalist*. Then using command `olimpic_data[apply(olimpic_data == "", 1, all),])` we can see athletes in which most of the information is empty. I suggest removing them, because we don't know true information about empty rows in columns, target on the column **Event** because most athletes don't have data in this column and others. And finally, we removed columns **Games** and **NOC** because they duplicate information from other columns. A lot of athletes have `NA` values in columns, that is why we don't remove them. 
 ```{r}
 
 olimpic_data[is.na(olimpic_data$Medal),]$Medal = 'Non Medalist'
@@ -62,8 +68,16 @@ olimpic_data = olimpic_data[olimpic_data$Event != '',]
 olimpic_data = subset(olimpic_data, select = -c(Games, NOC))
 
 ```
+Let's look at our data frame now:
+
+```{r}
+head(olimpic_data) %>% 
+  kable() %>% 
+  kable_styling()
+```
 
 ### Task 3
+
 
 ``` {r }
 olimpic_data %>% 
