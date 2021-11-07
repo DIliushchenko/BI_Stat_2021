@@ -1,7 +1,7 @@
 ---
 title: 'Project #1 BI Stat'
 author: "Dmitrii Iliushchenko"
-date: "October 25, 2021"
+date: "November 7, 2021"
 output: html_document
 ---
 
@@ -13,10 +13,6 @@ knitr::opts_chunk$set(echo = FALSE)
 
 Project was made specially for study in Statistic and R. In this project we use data on participation in the Olympic Games for the last 120 years. The data was taken from Bioinformatics Institute.
 
-## Data description
-
-Will be soon.
-
 ## Preparing
 
 For our future work load some libraries: 
@@ -25,6 +21,8 @@ For our future work load some libraries:
 
 `ggplot2` - great visualization
 
+`Hmisc`- summary statistics of data frame
+
 `knitr`, `kableExtra` - work with output in MarkDown 
 
 ```{r message=FALSE}
@@ -32,11 +30,12 @@ library(ggplot2)
 library(dplyr)
 library(knitr)
 library(kableExtra)
+library(Hmisc)
 ```
 
-### Task 1
 
-Creating function that takes all csv files for our project an then show the head of created data frame:
+
+Then, we need to storage all available data in r. Reach it by creating function that takes all csv files from the data folder and then show the head of created data frame:
 
 ```{r}
 read_all_data <- function(data_path)
@@ -58,8 +57,51 @@ olimpic_data = read_all_data('data_folder')
 head(olimpic_data) %>% kable() %>% kable_styling()
 ```
 
-### Task 2
-How we can see the most of athletes have blank spaces in column **Medal**, maybe they don't have any medals. First, let's change all empty rows with *Non Medalist*. Then using command `olimpic_data[apply(olimpic_data == "", 1, all),])` we can see athletes in which most of the information is empty. I suggest removing them, because we don't know true information about empty rows in columns, target on the column **Event** because most athletes don't have data in this column and others. And finally, we removed columns **Games** and **NOC** because they duplicate information from other columns. A lot of athletes have `NA` values in columns, that is why we don't remove them. 
+## EDA
+
+The data set has the following features:
+
+**ID** – Unique number for each athlete
+
+**Name** – Athlete's name
+
+**Sex** – M or F
+
+**Age** – Athlete's age
+
+**Height** – In centimeters
+
+**Weight** – In kilograms
+
+**Team** – Team name
+
+**NOC** – National Olympic Committee 3-letter code
+
+**Games** – Year and season
+
+**Year** – Integer
+
+**Season** – Summer or Winter
+
+**City** – Host city
+
+**Sport** – Sport
+
+**Event** – Event
+
+**Medal** – Gold, Silver, Bronze, or NA
+
+We have `r nrow(unique(olimpic_data))`  athletes and `r nrow(olimpic_data)` competition results for all athletes, keep in mind that the same athlete could perform several times, so the number of results is greater than the number of departures.
+
+Now look at summary statistics for **Age** , **Height**, **Weight** and **Medal**. In the table below we can see that all distributions for integer columns quite normal! And we don't obtain unusual values
+```{r}
+subset(olimpic_data,select = -c(ID,Name, Team, NOC, Games, Year, Season, City, Sport,Sex, Event)) %>% describe(digits = 2, ) %>% html()
+
+```
+
+<br>
+<br>
+How we can see the most of athletes have blank spaces in column **Medal**, maybe they don't have any medals. First, let's change all empty rows with *Non Medalist*. Then using command `olimpic_data[apply(olimpic_data == "", 1, all),])` we can see athletes in which most of the information is empty. I suggest removing them, because we don't know true information about empty rows in columns, target on the column **Event** because most athletes don't have data in this column and others. And finally, we removed columns **Games** and **NOC** because they duplicate information from other columns. A lot of athletes have `NA` values in columns, that is why we will not remove them.   
 ```{r}
 
 olimpic_data[is.na(olimpic_data$Medal),]$Medal = 'Non Medalist'
@@ -68,7 +110,7 @@ olimpic_data = olimpic_data[olimpic_data$Event != '',]
 olimpic_data = subset(olimpic_data, select = -c(Games, NOC))
 
 ```
-Let's look at our data frame now:
+Let's take a look at our data frame now:
 
 ```{r}
 head(olimpic_data) %>% 
@@ -78,7 +120,7 @@ head(olimpic_data) %>%
 
 ### Task 3
 
-
+Now, we want to find the age of the youngest athletes of both sexes at the **1992 Olympics**:
 ``` {r }
 olimpic_data %>% 
   group_by(Sex) %>% 
@@ -87,7 +129,11 @@ olimpic_data %>%
   kable() %>% 
   kable_styling(full_width = F, position = 'left')
 ```
+The **youngest woman** in the 1992 Olympics was **12**, while the **youngest man** was **14**! 
+
 ### Task 4
+Next, we calculate the *mean* and *standard deviation* of the **Height** variable for athletes of each gender
+You can see result at the table below:
 
 ``` {r}
 olimpic_data %>% 
@@ -99,6 +145,8 @@ olimpic_data %>%
 ```
 ### Task 5
 
+Then we need to calculate *mean* and *standard deviation* of the **Height** variable for female tennis players at the 2000 Olympics.
+Result is demonstrated below:
 ``` {r}
 olimpic_data %>% 
   filter(Sex == "F" & Year == 2000) %>% 
@@ -111,6 +159,7 @@ olimpic_data %>%
 
 ### Task 6
 
+We are also very interested in what sport the heaviest athlete participated at the 2006 Olympics.
 ``` {r}
 olimpic_data %>% 
   filter(Year == 2006) %>% 
@@ -121,18 +170,23 @@ olimpic_data %>%
   kable_styling(full_width = F, position = 'left')
 
 ```
+We now know that the 2006 Olympics' heaviest athlete was a **skeleton** athlete. 
+
 ### Task 7
 
+How many gold medals were won by women from 1980 to 2010?
 ``` {r}
 olimpic_data %>% 
   filter(Sex == 'F' & Year %in% seq(1980,2010,2) & Medal == 'Gold') %>% 
   summarise(n = n()) %>% 
   kable() %>% 
   kable_styling(position = 'left', full_width = F)
-
 ```
+**1920** medals were won by women from 1980 to 2010! That's a lot!  
+
 ### Task 8 
 
+Now we want to know, how many times athlete **John Aalberg** has participated in the Olympic Games in different years?
 ``` {r}
 olimpic_data %>% 
   filter(Name == 'John Aalberg') %>% 
@@ -141,8 +195,11 @@ olimpic_data %>%
   kable() %>% 
   kable_styling(full_width = F, position = 'left')
 ```
-### Task 9
+He competed in only two Olympics in **1992** and **1994**. But on the other hand, he took part in each of them **48** times.
 
+### Task 9
+Now let's take a deeper look at our data. We want to identify the least and most represented age groups of athletes at the 2008 Olympics. We will divide into four age groups: [15-25), [25-35), [35-45), [45-55]
+The result is shown in the table below:
 ``` {r}
 vec_of_group_age = c(15,25,35,45,55)
 
@@ -154,24 +211,26 @@ olimpic_data %>%
   kable_styling(full_width = F, position = 'left')
 ```
 ### Task 10
-
+Next, we are interested in how much the number of sports has changed between the 1994 and 2002 Olympic Games.
 ``` {r include = FALSE}
 res_10 = olimpic_data %>% 
   filter(Year == 2002 | Year == 1994) %>% 
   group_by(Year) %>% 
   select(Sport) %>% 
-  summarise(n = n()) %>% 
-  mutate(Diff = n - n[1]) %>% 
-  slice(2) %>% select(Diff)
+  distinct() %>%
+  summarise(n = n()) %>%
+  mutate(Diffrence = n - n[1]) %>% 
+  slice(2) %>% select(Diffrence)
 ```
 
 ``` {r}
 kable(res_10) %>% 
   kable_styling(full_width = F, position = 'left')
 ```
+At the 2002 Olympics, there are **3** more sports compared to the 1994 Olympics
 
 ### Task 11
-
+Next, we get the top three countries for each medal type for the Summer and Winter Olympics:
 ``` {r include = FALSE}
 res_11 = olimpic_data %>% 
   filter(Medal != 'Non Medalist' & Medal != '') %>% 
@@ -186,6 +245,7 @@ kable(res_11) %>%
 
 ### Task 12
 
+Now apply Z standardization to the **Height** column and save to a new column **Height_z_scores**
 ``` {r}
 olimpic_data %>%
   filter(Height != is.na(Height)) %>% 
@@ -197,6 +257,7 @@ olimpic_data %>%
 ```
 ### Task 13
 
+In addition, apply the min-max of normalization to the **Height** column and save to a new column **Height_min_max_scaled**
 ``` {r}
 olimpic_data %>% 
   filter(Height != is.na(Height)) %>% 
@@ -206,14 +267,43 @@ olimpic_data %>%
   kable() %>% 
   kable_styling()
 ```
+
 ### Task 14
+Next, compare the height, weight and age of men and women who participated in the Winter Olympics. 
+First filter not `NA` cases and data only for Winter games, and then build distribution plots
+``` {r warning = F}
+res_14 = olimpic_data %>%
+  filter(Season == 'Winter') %>% 
+  group_by(Sex) %>% 
+  ungroup() %>%
+  select(Sex,Height, Weight, Age) %>% 
+  na.omit()
+
+res_14_women = res_14 %>% 
+  filter(Sex == "F")
+res_14_men = res_14 %>% 
+  filter(Sex =='M')
+
+res_14_women %>% describe() %>% html()
+res_14_men %>% describe() %>% html()
+```
+As we can see, the distribution of the variables **Height** and **Weight** in men and women differs from normal, which means that parametric criteria cannot be applied to them.
+Now let's apply test to identify statistically significant differences. For **Weight** and **Height** values we will use Wilcox test, while **Age** will be tested with Welch t test.
+
+```{r}
+t.test(res_14_women$Age, res_14_men$Age, alternative = c("two.sided"), paired = F)
+wilcox.test(res_14_women$Age, res_14_men$Age, alternative = c("two.sided"), paired = F)
+wilcox.test(res_14_women$Age, res_14_men$Age, alternative = c("two.sided"), paired = F)
+```
+All three tests showed significant differences, since the p-value was much less than 0.05 (2.2e-16), which means that height, weight and age statistically significantly differ from each other. 
+At the end, we will compile a table that will display: mean, standard deviation and median for each gender for each variable.
 
 ``` {r include = FALSE}
 res_14 = olimpic_data %>% 
   filter(Season == 'Winter') %>% 
   group_by(Sex) %>% 
   select(Height, Weight, Age) %>% 
-  summarize(mean_height = mean(Height, na.rm = T),
+  summarise(mean_height = mean(Height, na.rm = T),
             sd_height = sd(Height, na.rm = T),
             median_height = median(Height, na.rm=T),
             mean_weight = mean(Weight, na.rm = T),
@@ -223,12 +313,22 @@ res_14 = olimpic_data %>%
             sd_age = sd(Age, na.rm = T),
             median_age = median(Age, na.rm=T))
 ```
-``` {r}
 
+``` {r}
 kable(res_14) %>% kable_styling()
 ```
+
+
 ### Task 15
 
-В стадии разработки. Хочется показать, что количество медалей зависит от команды!
+Take a look at the variables **Medal** and **Team**, we are wondering if there is a correlation between them? Let us hypothesize that the number of medals depends on the team that competes at the Olympic Games.
+First, remove the athletes for whom the team or medal they received is unknown. Our data are presented as factors, we should immediately use Spearman's test for rank correlation
+``` {r warning = F}
+t15_olympics_data <- olimpic_data %>% 
+  filter(!is.na(Team) & !is.na(Medal))
+
+cor.test(rank(t15_olympics_data$Team), rank(t15_olympics_data$Medal), method = 'spearman')
+```
+According to Spearman's method, the correlation coefficient is 0.01128128, which indicates a weak relationship between the `Team` and `Medal` variables, and the `p-value` turned out to be a little bit less than 0.05, which allows us to say with confidence that the coefficient is statistically significantly different from zero.
 
 

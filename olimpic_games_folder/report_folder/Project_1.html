@@ -11,7 +11,7 @@
 
 <meta name="author" content="Dmitrii Iliushchenko" />
 
-<meta name="date" content="2021-10-25" />
+<meta name="date" content="2021-11-07" />
 
 <title>Project #1 BI Stat</title>
 
@@ -169,7 +169,7 @@ pre code {
 
 <h1 class="title toc-ignore">Project #1 BI Stat</h1>
 <h4 class="author">Dmitrii Iliushchenko</h4>
-<h4 class="date">October 25, 2021</h4>
+<h4 class="date">November 7, 2021</h4>
 
 </div>
 
@@ -178,19 +178,14 @@ pre code {
 <h2>Project description</h2>
 <p>Project was made specially for study in Statistic and R. In this project we use data on participation in the Olympic Games for the last 120 years. The data was taken from Bioinformatics Institute.</p>
 </div>
-<div id="data-description" class="section level2">
-<h2>Data description</h2>
-<p>Will be soon.</p>
-</div>
 <div id="preparing" class="section level2">
 <h2>Preparing</h2>
 <p>For our future work load some libraries:</p>
 <p><code>dplyr</code> - work with data frame with easier syntax</p>
 <p><code>ggplot2</code> - great visualization</p>
+<p><code>Hmisc</code>- summary statistics of data frame</p>
 <p><code>knitr</code>, <code>kableExtra</code> - work with output in MarkDown</p>
-<div id="task-1" class="section level3">
-<h3>Task 1</h3>
-<p>Creating function that takes all csv files for our project an then show the head of created data frame:</p>
+<p>Then, we need to storage all available data in r. Reach it by creating function that takes all csv files from the data folder and then show the head of created data frame:</p>
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
@@ -527,10 +522,161 @@ NA
 </tbody>
 </table>
 </div>
-<div id="task-2" class="section level3">
-<h3>Task 2</h3>
-<p>How we can see the most of athletes have blank spaces in column <code>Medal</code>, maybe they don’t have any medals. First, let’s change all empty rows with <code>Non Medalist</code>. Then using command <code>olimpic_data[apply(olimpic_data == &quot;&quot;, 1, all),])</code> we can see athletes in which most of the information is empty. I suggest removing them, because we don’t know true information about empty rows in columns, target on the column <code>Event</code> because most athletes don’t have data in this column and others. And finally, we removed columns <code>Games</code> and <code>NOC</code> because they duplicate information from other columns.</p>
-Let’s look at our data frame now:
+<div id="eda" class="section level2">
+<h2>EDA</h2>
+<p>The data set has the following features:</p>
+<p><strong>ID</strong> – Unique number for each athlete</p>
+<p><strong>Name</strong> – Athlete’s name</p>
+<p><strong>Sex</strong> – M or F</p>
+<p><strong>Age</strong> – Athlete’s age</p>
+<p><strong>Height</strong> – In centimeters</p>
+<p><strong>Weight</strong> – In kilograms</p>
+<p><strong>Team</strong> – Team name</p>
+<p><strong>NOC</strong> – National Olympic Committee 3-letter code</p>
+<p><strong>Games</strong> – Year and season</p>
+<p><strong>Year</strong> – Integer</p>
+<p><strong>Season</strong> – Summer or Winter</p>
+<p><strong>City</strong> – Host city</p>
+<p><strong>Sport</strong> – Sport</p>
+<p><strong>Event</strong> – Event</p>
+<p><strong>Medal</strong> – Gold, Silver, Bronze, or NA</p>
+<p>We have 22734 athletes and 274032 competition results for all athletes, keep in mind that the same athlete could perform several times, so the number of results is greater than the number of departures.</p>
+<p>Now look at summary statistics for <strong>Age</strong> , <strong>Height</strong>, <strong>Weight</strong> and <strong>Medal</strong>. In the table below we can see that all distributions for integer columns quite normal! And we don’t obtain unusual values</p>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
+<script type="text/javascript">
+<!--
+    function expand_collapse(id) {
+       var e = document.getElementById(id);
+       var f = document.getElementById(id+"_earrows");
+       if(e.style.display == 'none'){
+          e.style.display = 'block';
+          f.innerHTML = '&#9650';
+       }
+       else {
+          e.style.display = 'none';
+          f.innerHTML = '&#9660';
+       }
+    }
+//-->
+</script>
+<style>
+.earrows {color:silver;font-size:11px;}
+
+fcap {
+ font-family: Verdana;
+ font-size: 12px;
+ color: MidnightBlue
+ }
+
+smg {
+ font-family: Verdana;
+ font-size: 10px;
+ color: 󅒐
+}
+
+hr.thinhr { margin-top: 0.15em; margin-bottom: 0.15em; }
+
+span.xscript {
+position: relative;
+}
+span.xscript sub {
+position: absolute;
+left: 0.1em;
+bottom: -1ex;
+}
+</style>
+ <font color="MidnightBlue"><div align="center"><span style="font-weight:bold">. <br><br> 4  Variables   274032  Observations</span></div></font> <hr class="thinhr"> <span style="font-weight:bold">Age</span><div style="float: right; text-align: right;"><img src="data:image/png;base64,
+iVBORw0KGgoAAAANSUhEUgAAAJcAAAANCAMAAACTvAxuAAABiVBMVEUAAAABAQEEBAQKCgoLCwsODg4ZGRkcHBwgICAjIyMkJCQoKCgsLCwxMTEyMjI6Ojo8PDw/Pz9AQEBBQUFCQkJDQ0NHR0dISEhJSUlKSkpLS0tMTExRUVFSUlJUVFRVVVVbW1tdXV1eXl5iYmJtbW1vb29wcHBxcXFycnJzc3N0dHR1dXV2dnZ3d3d4eHh5eXl6enp7e3t8fHx9fX1+fn5/f3+AgICBgYGCgoKDg4OEhISFhYWGhoaHh4eIiIiJiYmKioqLi4uMjIyNjY2Ojo6RkZGSkpKTk5OWlpaYmJiZmZmampqenp6ioqKlpaWmpqaoqKirq6usrKytra2urq6vr6+wsLCxsbG0tLS1tbW2tra3t7e4uLi5ubm6urq7u7u8vLy9vb2+vr6/v7/CwsLExMTGxsbKysrMzMzOzs7Pz8/S0tLU1NTa2trd3d3f39/g4ODh4eHi4uLk5OTl5eXm5ubo6Ojq6urr6+vu7u7x8fH09PT19fX29vb4+Pj7+/v8/Pz9/f3///944SOAAAABYElEQVQ4jc3V+VMBYRwG8Ce6ddMl3QelU6GIDoRERadcHTpUulQbqfjL++qaoeWnrJ5ndmd23p15P/Od2X3BZEkYqhpntsX8B0mWvFVtVjqghbHrjG2Zi7C6YpiBhlxaLFkjXIs+w+bqC/64dDBVeOOcq1hdcVJ9u2ZJZuS7/oNLcYLpNJcOVleUc9dlRi7QTx2AlCrDIIboGoYu87V8J3NetzGof81LD7PgiON5pT8m+AZWlx6W5pDtqVCu3kOosrjmsAD7RqwQLtkxlDlc8zBgpT4UeHnm0BWOVztIlduVqhE23rbkXHpjZszRwOtp4j55lfz7PxzoLOpeb3PwFUVyyOnLG6GOYow6jgkoPjqJKaryy52Sq8mtIfEiTLBgmWcvWS1eK3UJtsr3hDtlu/W+2kCTr84vPGjZbw2I/I3XTFDsafCK72g7vyjCuIWedo/kgfF0uDsfM45GZw/d3gFYkkDP2k3YvwAAAABJRU5ErkJggg==" alt="image" /></div> <style>
+ .hmisctable269080 {
+ border: none;
+ font-size: 85%;
+ }
+ .hmisctable269080 td {
+ text-align: center;
+ padding: 0 1ex 0 1ex;
+ }
+ .hmisctable269080 th {
+ color: MidnightBlue;
+ text-align: center;
+ padding: 0 1ex 0 1ex;
+ font-weight: normal;
+ }
+ </style>
+ <table class="hmisctable269080">
+ <tr><th>n</th><th>missing</th><th>distinct</th><th>Info</th><th>Mean</th><th>Gmd</th><th>.05</th><th>.10</th><th>.25</th><th>.50</th><th>.75</th><th>.90</th><th>.95</th></tr>
+ <tr><td>262932</td><td>11100</td><td>60</td><td>0.996</td><td>26</td><td>6.5</td><td>18</td><td>19</td><td>21</td><td>24</td><td>28</td><td>33</td><td>37</td></tr>
+ </table>
+ <span style="font-size: 85%;"><font color="MidnightBlue">lowest</font> : 12 13 14 15 16 ,  <font color="MidnightBlue">highest</font>: 71 72 74 75 84</span> <hr class="thinhr"> <span style="font-weight:bold">Height</span><div style="float: right; text-align: right;"><img src="data:image/png;base64,
+iVBORw0KGgoAAAANSUhEUgAAAJcAAAANCAMAAACTvAxuAAAB9VBMVEUAAAABAQECAgIDAwMEBAQFBQUGBgYHBwcJCQkLCwsMDAwNDQ0PDw8QEBASEhIXFxcYGBgaGhobGxscHBwdHR0fHx8jIyMkJCQlJSUmJiYnJycoKCgpKSkqKiorKyssLCwtLS0uLi4vLy8xMTEyMjIzMzM0NDQ1NTU2NjY3Nzc4ODg6Ojo7Ozs8PDw9PT0+Pj4/Pz9AQEBBQUFCQkJDQ0NERERFRUVGRkZHR0dISEhJSUlKSkpLS0tMTExNTU1OTk5PT09QUFBSUlJUVFRVVVVWVlZYWFhZWVlaWlpcXFxdXV1eXl5fX19hYWFiYmJkZGRlZWVmZmZnZ2dpaWltbW1ubm5vb29wcHBxcXFzc3N0dHR1dXV4eHh5eXl6enp7e3t8fHx+fn5/f3+AgICBgYGDg4OFhYWHh4eIiIiMjIyPj4+QkJCSkpKVlZWXl5eZmZmbm5ufn5+lpaWoqKipqamqqqqsrKyvr6+ysrK0tLS2tra3t7e5ubm6urq8vLy9vb2+vr7BwcHDw8PFxcXGxsbHx8fIyMjLy8vMzMzOzs7Q0NDR0dHV1dXX19fa2trb29vc3Nzd3d3e3t7g4ODi4uLk5OTl5eXn5+fo6Ojp6enq6urr6+vs7Oz19fX29vb39/f4+Pj5+fn6+vr7+/v9/f3+/v7////c46gWAAACGklEQVQ4jc3VW1PTUBAA4I2ilASEErlIW5DSFlIaIok1TdoQ1ApSpQFFUatWuYiIN7wrCt4VL9FaFPUooMj5nZ62M844PiANjO7D7sPu2flmXw4giyE25uqn2VyNlVvdmA3AFkNuztVDQZLSCBus1Y3ZWDVXtJYkX+z/dNVGc66HT62uteb68C3jGq86P/W7i1f+mctIkGQfyLgGKNYgri9Lv1zNMn4+Zs1l5hluwXz5oChu8h6zjyqLTqpVthGzWjWjZaTp4c04ne/mbKz4XvdekPRuAXMqPlnOGJ3b/cEeitVAdoJR58rca+LqJk5OHWXI3P3b+M3F/O610geuvfhKwjY6z6nTh0sYDQJe0ClWAckJOjjbmvawBTvBK1C7mFOT82E/HqZ+rL0rtYgdHbi7AjqLfNug/U+XBApL6eANgMaURAtFbm4IiOvj27V0PbtVcJm4EHG1QQMP2jIuDXifrQMOXrrQ5U4vzq2iawHju+8/v3518/FI6NyT3VvheNKhUvrfuxrIZIUCwZrCbnpwPHWtH6ePff0+u7S8i/xFXdcRmok8ynxLybg0gXoHA0M94VH9QN/G0710+/pAI6gbSmUQakCBSgHEzRCCeg7kYlqGJjcolF2Cli2kWd0Ckp1SwE2adPEO8NeTSVYEoZI0Ha2glNbFoDW0Lu4KJz1HDOGM3H/WfyKG7oiJ4cg02j8WmUHoxj4C+QkRxAKgIB7f+AAAAABJRU5ErkJggg==" alt="image" /></div> <style>
+ .hmisctable381070 {
+ border: none;
+ font-size: 85%;
+ }
+ .hmisctable381070 td {
+ text-align: center;
+ padding: 0 1ex 0 1ex;
+ }
+ .hmisctable381070 th {
+ color: MidnightBlue;
+ text-align: center;
+ padding: 0 1ex 0 1ex;
+ font-weight: normal;
+ }
+ </style>
+ <table class="hmisctable381070">
+ <tr><th>n</th><th>missing</th><th>distinct</th><th>Info</th><th>Mean</th><th>Gmd</th><th>.05</th><th>.10</th><th>.25</th><th>.50</th><th>.75</th><th>.90</th><th>.95</th></tr>
+ <tr><td>213204</td><td>60828</td><td>80</td><td>0.999</td><td>176</td><td>12</td><td>159</td><td>162</td><td>169</td><td>175</td><td>183</td><td>189</td><td>193</td></tr>
+ </table>
+ <span style="font-size: 85%;"><font color="MidnightBlue">lowest</font> : 132 135 139 140 142 ,  <font color="MidnightBlue">highest</font>: 214 215 217 218 221</span> <hr class="thinhr"> <span style="font-weight:bold">Weight</span><div style="float: right; text-align: right;"><img src="data:image/png;base64,
+iVBORw0KGgoAAAANSUhEUgAAAJcAAAANCAMAAACTvAxuAAAB+FBMVEUAAAABAQECAgIDAwMEBAQFBQUGBgYHBwcICAgJCQkKCgoLCwsMDAwNDQ0ODg4PDw8QEBARERESEhITExMUFBQVFRUWFhYXFxcYGBgaGhobGxscHBwdHR0eHh4fHx8jIyMkJCQlJSUmJiYnJycoKCgqKiorKyssLCwvLy8yMjIzMzM2NjY3Nzc4ODg5OTk6Ojo7Ozs9PT0+Pj4/Pz9AQEBBQUFCQkJDQ0NERERFRUVGRkZHR0dISEhJSUlKSkpLS0tNTU1RUVFSUlJTU1NUVFRVVVVWVlZXV1dZWVlbW1tcXFxdXV1eXl5fX19jY2NlZWVqampra2ttbW1ubm5wcHBxcXFzc3N0dHR1dXV4eHh/f3+BgYGDg4OFhYWHh4eIiIiJiYmLi4uRkZGTk5OVlZWWlpabm5ucnJyenp6fn5+ioqKjo6OkpKSlpaWmpqaoqKirq6utra2urq6vr6+xsbGysrK0tLS1tbW2tra4uLi7u7u8vLzBwcHCwsLExMTGxsbIyMjKysrLy8vOzs7Pz8/Q0NDR0dHS0tLT09PU1NTV1dXW1tbX19fY2NjZ2dna2trb29vc3Nzd3d3g4ODh4eHk5OTl5eXm5ubn5+fo6Ojp6enr6+vt7e3v7+/w8PDx8fH29vb39/f5+fn6+vr7+/v9/f3+/v7///8wSqb3AAAB5UlEQVQ4jWOYTQJIYWgiRTklgGE5CSCLYSIpyikBhN21uBpETpy1HOauiHwauwkECLurnKFr+fI5Gj7Ll84FuWvCEhm/QeGuYoaW5cvlRNynBMplMTQbM2eA3bW4f+Dd1ZxWKyDk7iPMl8VQwcCQDHZXJvM82rqrHw9o6wASqQzpDMwc/HYOfFw2QCaDt7hrT21xFEMhf1l/Jz7dFAHc4VU6b5KZdbi+ghJDOQMDp5CqqiAHA0MQAwMrn5OzrFwKULRyuUo8zcILl8Q8hlRlcXFRHkYGBn2Qu8TFQO4CAiY+MQkRSbC7cvlCgConp9DPXdMd+xjCpUXFRUDuYkBzF1BYxJDBisGXkdOyqKsrkWEBUMciOrirwauMQZKBjR+3u3ghwhxCUtKqYQyBUXkLpVOBGmsCaOKupmXLi5KC3ew1GViAljLzEeEuMTEhHhBLkUnTzSUslHlmxLQpmVOBZs3vhRvbmANnzptBrLuAdZFD9uxYa89ydUkGSREeQVERfnawpcy8wqLC3FAHCIiKCECEmUDCPEjCHHBhUSEmeQZGJgZFIwM9NQFdLVUdEW1Lk0gvEVPrdj1uI3OLBA+NEmP7dt362QGZ0bb+VRa23fZ1s2fHxAFd0Wpp0Tx7dljC7AJvIA8ACAsCKTqRlf4AAAAASUVORK5CYII=" alt="image" /></div> <style>
+ .hmisctable945822 {
+ border: none;
+ font-size: 85%;
+ }
+ .hmisctable945822 td {
+ text-align: center;
+ padding: 0 1ex 0 1ex;
+ }
+ .hmisctable945822 th {
+ color: MidnightBlue;
+ text-align: center;
+ padding: 0 1ex 0 1ex;
+ font-weight: normal;
+ }
+ </style>
+ <table class="hmisctable945822">
+ <tr><th>n</th><th>missing</th><th>distinct</th><th>Info</th><th>Mean</th><th>Gmd</th><th>.05</th><th>.10</th><th>.25</th><th>.50</th><th>.75</th><th>.90</th><th>.95</th></tr>
+ <tr><td>210960</td><td>63072</td><td>134</td><td>0.999</td><td>71</td><td>16</td><td>51</td><td>54</td><td>61</td><td>70</td><td>79</td><td>89</td><td>95</td></tr>
+ </table>
+ <span style="font-size: 85%;"><font color="MidnightBlue">lowest</font> :  32  35  36  38  39 ,  <font color="MidnightBlue">highest</font>: 150 155 156 160 163</span> <hr class="thinhr"> <span style="font-weight:bold">Medal</span><div style="float: right; text-align: right;"><img src="data:image/png;base64,
+iVBORw0KGgoAAAANSUhEUgAAAAoAAAANCAMAAACn6Q83AAAAGFBMVEUAAAAKCgo3Nzc7OztAQEDa2trr6+v///9v16jkAAAAJ0lEQVQImWNgZGNjY2YGEgwMDOzs7CwsQIJEJisrKxMTkCDfBLgbAK24Amxvb7wrAAAAAElFTkSuQmCC" alt="image" /></div> <style>
+ .hmisctable274846 {
+ border: none;
+ font-size: 85%;
+ }
+ .hmisctable274846 td {
+ text-align: center;
+ padding: 0 1ex 0 1ex;
+ }
+ .hmisctable274846 th {
+ color: MidnightBlue;
+ text-align: center;
+ padding: 0 1ex 0 1ex;
+ font-weight: normal;
+ }
+ </style>
+ <table class="hmisctable274846">
+ <tr><th>n</th><th>missing</th><th>distinct</th></tr>
+ <tr><td>36612</td><td>237420</td><td>3</td></tr>
+ </table>
+ <pre style="font-size:85%;">
+ Value      Bronze   Gold Silver
+ Frequency   11904  12408  12300
+ Proportion  0.325  0.339  0.336
+ </pre>
+ <hr class="thinhr">
+<p><br> <br> How we can see the most of athletes have blank spaces in column <strong>Medal</strong>, maybe they don’t have any medals. First, let’s change all empty rows with <em>Non Medalist</em>. Then using command <code>olimpic_data[apply(olimpic_data == &quot;&quot;, 1, all),])</code> we can see athletes in which most of the information is empty. I suggest removing them, because we don’t know true information about empty rows in columns, target on the column <strong>Event</strong> because most athletes don’t have data in this column and others. And finally, we removed columns <strong>Games</strong> and <strong>NOC</strong> because they duplicate information from other columns. A lot of athletes have <code>NA</code> values in columns, that is why we will not remove them.</p>
+<p>Let’s take a look at our data frame now:</p>
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
@@ -824,9 +970,9 @@ Non Medalist
 </tr>
 </tbody>
 </table>
-</div>
 <div id="task-3" class="section level3">
 <h3>Task 3</h3>
+Now, we want to find the age of the youngest athletes of both sexes at the <strong>1992 Olympics</strong>:
 <table class="table" style="width: auto !important; ">
 <thead>
 <tr>
@@ -857,9 +1003,11 @@ M
 </tr>
 </tbody>
 </table>
+<p>The <strong>youngest woman</strong> in the 1992 Olympics was <strong>12</strong>, while the <strong>youngest man</strong> was <strong>14</strong>!</p>
 </div>
 <div id="task-4" class="section level3">
 <h3>Task 4</h3>
+<p>Next, we calculate the <em>mean</em> and <em>standard deviation</em> of the <strong>Height</strong> variable for athletes of each gender You can see result at the table below:</p>
 <table class="table" style="width: auto !important; ">
 <thead>
 <tr>
@@ -902,6 +1050,7 @@ M
 </div>
 <div id="task-5" class="section level3">
 <h3>Task 5</h3>
+Then we need to calculate <em>mean</em> and <em>standard deviation</em> of the <strong>Height</strong> variable for female tennis players at the 2000 Olympics. Result is demonstrated below:
 <table class="table" style="width: auto !important; ">
 <thead>
 <tr>
@@ -927,6 +1076,7 @@ Sd Height
 </div>
 <div id="task-6" class="section level3">
 <h3>Task 6</h3>
+We are also very interested in what sport the heaviest athlete participated at the 2006 Olympics.
 <table class="table" style="width: auto !important; ">
 <thead>
 <tr>
@@ -943,9 +1093,11 @@ Skeleton
 </tr>
 </tbody>
 </table>
+<p>We now know that the 2006 Olympics’ heaviest athlete was a <strong>skeleton</strong> athlete.</p>
 </div>
 <div id="task-7" class="section level3">
 <h3>Task 7</h3>
+How many gold medals were won by women from 1980 to 2010?
 <table class="table" style="width: auto !important; ">
 <thead>
 <tr>
@@ -962,9 +1114,11 @@ n
 </tr>
 </tbody>
 </table>
+<p><strong>1920</strong> medals were won by women from 1980 to 2010! That’s a lot!</p>
 </div>
 <div id="task-8" class="section level3">
 <h3>Task 8</h3>
+Now we want to know, how many times athlete <strong>John Aalberg</strong> has participated in the Olympic Games in different years?
 <table class="table" style="width: auto !important; ">
 <thead>
 <tr>
@@ -995,9 +1149,11 @@ n
 </tr>
 </tbody>
 </table>
+<p>He competed in only two Olympics in <strong>1992</strong> and <strong>1994</strong>. But on the other hand, he took part in each of them <strong>48</strong> times.</p>
 </div>
 <div id="task-9" class="section level3">
 <h3>Task 9</h3>
+Now let’s take a deeper look at our data. We want to identify the least and most represented age groups of athletes at the 2008 Olympics. We will divide into four age groups: [15-25), [25-35), [35-45), [45-55] The result is shown in the table below:
 <table class="table" style="width: auto !important; ">
 <thead>
 <tr>
@@ -1047,25 +1203,28 @@ n
 </div>
 <div id="task-10" class="section level3">
 <h3>Task 10</h3>
+<p>Next, we are interested in how much the number of sports has changed between the 1994 and 2002 Olympic Games.</p>
 <table class="table" style="width: auto !important; ">
 <thead>
 <tr>
 <th style="text-align:right;">
-Diff
+Diffrence
 </th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td style="text-align:right;">
-948
+3
 </td>
 </tr>
 </tbody>
 </table>
+<p>At the 2002 Olympics, there are <strong>3</strong> more sports compared to the 1994 Olympics</p>
 </div>
 <div id="task-11" class="section level3">
 <h3>Task 11</h3>
+<p>Next, we get the top three countries for each medal type for the Summer and Winter Olympics:</p>
 <table class="table" style="width: auto !important; ">
 <thead>
 <tr>
@@ -1369,6 +1528,7 @@ Germany
 </div>
 <div id="task-12" class="section level3">
 <h3>Task 12</h3>
+Now apply Z standardization to the <strong>Height</strong> column and save to a new column <strong>Height_z_scores</strong>
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
@@ -1686,6 +1846,7 @@ Non Medalist
 </div>
 <div id="task-13" class="section level3">
 <h3>Task 13</h3>
+In addition, apply the min-max of normalization to the <strong>Height</strong> column and save to a new column <strong>Height_min_max_scaled</strong>
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
@@ -2003,6 +2164,296 @@ Non Medalist
 </div>
 <div id="task-14" class="section level3">
 <h3>Task 14</h3>
+<p>Next, compare the height, weight and age of men and women who participated in the Winter Olympics. First filter not <code>NA</code> cases and data only for Winter games, and then build distribution plots</p>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
+<script type="text/javascript">
+<!--
+    function expand_collapse(id) {
+       var e = document.getElementById(id);
+       var f = document.getElementById(id+"_earrows");
+       if(e.style.display == 'none'){
+          e.style.display = 'block';
+          f.innerHTML = '&#9650';
+       }
+       else {
+          e.style.display = 'none';
+          f.innerHTML = '&#9660';
+       }
+    }
+//-->
+</script>
+<style>
+.earrows {color:silver;font-size:11px;}
+
+fcap {
+ font-family: Verdana;
+ font-size: 12px;
+ color: MidnightBlue
+ }
+
+smg {
+ font-family: Verdana;
+ font-size: 10px;
+ color: 󅒐
+}
+
+hr.thinhr { margin-top: 0.15em; margin-bottom: 0.15em; }
+
+span.xscript {
+position: relative;
+}
+span.xscript sub {
+position: absolute;
+left: 0.1em;
+bottom: -1ex;
+}
+</style>
+ <font color="MidnightBlue"><div align="center"><span style="font-weight:bold">. <br><br> 4  Variables   11004  Observations</span></div></font> <hr class="thinhr"> <span style="font-weight:bold">Sex</span> <style>
+ .hmisctable242682 {
+ border: none;
+ font-size: 85%;
+ }
+ .hmisctable242682 td {
+ text-align: center;
+ padding: 0 1ex 0 1ex;
+ }
+ .hmisctable242682 th {
+ color: MidnightBlue;
+ text-align: center;
+ padding: 0 1ex 0 1ex;
+ font-weight: normal;
+ }
+ </style>
+ <table class="hmisctable242682">
+ <tr><th>n</th><th>missing</th><th>distinct</th><th>value</th></tr>
+ <tr><td>11004</td><td>0</td><td>1</td><td>F</td></tr>
+ </table>
+ <pre style="font-size:85%;">
+ Value          F
+ Frequency  11004
+ Proportion     1
+ </pre>
+ <hr class="thinhr"> <span style="font-weight:bold">Height</span><div style="float: right; text-align: right;"><img src="data:image/png;base64,
+iVBORw0KGgoAAAANSUhEUgAAAGcAAAANCAMAAACD8ID3AAABaFBMVEUAAAABAQECAgIDAwMGBgYMDAwPDw8ZGRkbGxsdHR0gICAhISEjIyMlJSUmJiYoKCgqKiorKystLS0vLy8wMDAxMTE0NDQ/Pz9BQUFERERJSUlNTU1OTk5PT09TU1NVVVVYWFhaWlpdXV1gYGBlZWVnZ2dra2tvb290dHR1dXV2dnZ3d3d4eHh7e3t8fHx9fX1/f3+AgICCgoKFhYWHh4eIiIiJiYmLi4uNjY2Pj4+QkJCTk5OUlJSZmZmcnJydnZ2fn5+goKChoaGlpaWmpqanp6eoqKipqamqqqqrq6usrKytra2zs7O3t7e5ubm8vLy9vb2+vr7AwMDCwsLDw8PHx8fKysrOzs7Q0NDR0dHV1dXZ2dna2trd3d3e3t7f39/g4ODj4+Pm5ubo6Ojp6enq6urr6+vs7Ozt7e3v7+/w8PDx8fHy8vLz8/P19fX29vb4+Pj5+fn6+vr7+/v8/Pz9/f3+/v7///8xZu9MAAABk0lEQVQ4ja3U+TMCYRgH8K8caeXIrRxdjogcRchVaaMWWSFyJF5HVCjvv+9td6bJmN1J+v7wvLvv+877mWdn9gVRiwBedb36gKolDqHi7XX6RXW3Wv7inODo145le/0dEYfyw3OuVO9KZczwT8e9peAE5mn/OBtPcV4Pp29EwbF00A4LGw8hVji5jQ91J6mQriFWwtgsT4TPg/AnQkkTl+RMyVDCjyCbNbbLq9uIKJ0kpZp+jjfozsF74yrrx6fJSv1kNb6f/QiI1/DdIjOVjq2NGsZy8DDHi4zkZOAtO7M8TRdlJ5v5m2NvLTtXri8bp+DcBUoOZ3tr8suOdaAWZzfFHB8eFZ2VhrzkEKwzp/BAR/po4l7Jkf6D/FOpDu7TWOFmrig5Rc0Sc9ZBFB0PchXOWvMXc9om2DmFGP18KBtpZ56CnDXsCT23kxyxO4hmSgTvxYVVS7qNaTjZ/ebGpVlHOodTcEURWcT1qJ7oR6+xGEHUhdRwJ9GZL+HmITiRNnYTrTXVG+UhLrQQh12+27Yhkm9kSunFpRBcowAAAABJRU5ErkJggg==" alt="image" /></div> <style>
+ .hmisctable536835 {
+ border: none;
+ font-size: 85%;
+ }
+ .hmisctable536835 td {
+ text-align: center;
+ padding: 0 1ex 0 1ex;
+ }
+ .hmisctable536835 th {
+ color: MidnightBlue;
+ text-align: center;
+ padding: 0 1ex 0 1ex;
+ font-weight: normal;
+ }
+ </style>
+ <table class="hmisctable536835">
+ <tr><th>n</th><th>missing</th><th>distinct</th><th>Info</th><th>Mean</th><th>Gmd</th><th>.05</th><th>.10</th><th>.25</th><th>.50</th><th>.75</th><th>.90</th><th>.95</th></tr>
+ <tr><td>11004</td><td>0</td><td>34</td><td>0.996</td><td>166.5</td><td>7.122</td><td>157</td><td>158</td><td>161</td><td>167</td><td>172</td><td>175</td><td>177</td></tr>
+ </table>
+ <span style="font-size: 85%;"><font color="MidnightBlue">lowest</font> : 150 151 152 153 154 ,  <font color="MidnightBlue">highest</font>: 179 180 181 182 185</span> <hr class="thinhr"> <span style="font-weight:bold">Weight</span><div style="float: right; text-align: right;"><img src="data:image/png;base64,
+iVBORw0KGgoAAAANSUhEUgAAAHkAAAANCAMAAAC6lzGsAAABd1BMVEUAAAABAQEDAwMHBwcPDw8QEBARERESEhITExMaGhocHBweHh4lJSUmJiYpKSksLCwtLS0uLi4wMDAxMTEzMzM0NDQ1NTU2NjY4ODg5OTk6Ojo9PT1BQUFHR0dJSUlNTU1PT09UVFRVVVVXV1dYWFhaWlpdXV1fX19iYmJjY2NmZmZnZ2doaGhpaWlra2tvb29wcHBycnJzc3N1dXV3d3d4eHh5eXl6enp8fHx9fX1+fn6AgICEhISJiYmKioqLi4uNjY2Ojo6RkZGWlpaXl5eYmJiampqenp6jo6OkpKSmpqaoqKiqqqqsrKyurq6wsLCysrKzs7O0tLS1tbW4uLi5ubm8vLy9vb2/v7/Dw8PGxsbIyMjJycnMzMzOzs7Pz8/R0dHU1NTV1dXW1tbX19fa2trb29vc3Nzd3d3f39/i4uLm5ubn5+fo6Ojp6enq6urr6+vv7+/x8fH19fX29vb4+Pj5+fn6+vr7+/v8/Pz9/f3+/v7///+LzAheAAABq0lEQVQ4je3UZ0/CUBgF4GPd4N4Iiigq7r1QcLUKDhwo4kZxoahXsGihP96XNiIIiUjiN98PJ71Nzn1y2+SC5TrcaM5VZSDnOtxMzlVl/uXME4lRPPDxXL+ILIVevOmy+Cdy4ySFgGfKkuEz7C7miZ/yehOFVLNznB/4tXz985SaKGZxRFnQ7YIwBh89coMUgxyFD2MCXFlslDLZnFlroVjG41S7XDR0im0bwsqZpR1phpPfpTBs2zilV+e3FIG+7L58mjx9kbQ4LntJkk2VqfIhDklu60rINWYKJ64/67fj0ezlMOxJK9rlLZRJfg2T7IWXZF2LKs9XyZUmtWNtVusCgr+RbeJmLCYm5JHquPz6Te5oTZOHikiW+v3UsWhlMSrZnnkEpciP8l1CdsM3Vy5PCPLKk7qL1vKUv58qt+gyy49YVjt14zdYI3nAIPe4krzoXvwHODZIZsxsZPpVDzx2Dd2m97A6cNBbyCqMV1jgcdKpYZrOE9TWw2+sYIW9HjituDc00L29ha1RjjUYqOOER+n4Yf/q8PO4VDq0L18cVG5rN9yreuow9gHsYG4iFA4F8wAAAABJRU5ErkJggg==" alt="image" /></div> <style>
+ .hmisctable396495 {
+ border: none;
+ font-size: 85%;
+ }
+ .hmisctable396495 td {
+ text-align: center;
+ padding: 0 1ex 0 1ex;
+ }
+ .hmisctable396495 th {
+ color: MidnightBlue;
+ text-align: center;
+ padding: 0 1ex 0 1ex;
+ font-weight: normal;
+ }
+ </style>
+ <table class="hmisctable396495">
+ <tr><th>n</th><th>missing</th><th>distinct</th><th>Info</th><th>Mean</th><th>Gmd</th><th>.05</th><th>.10</th><th>.25</th><th>.50</th><th>.75</th><th>.90</th><th>.95</th></tr>
+ <tr><td>11004</td><td>0</td><td>40</td><td>0.997</td><td>59.88</td><td>8.527</td><td>47</td><td>50</td><td>55</td><td>60</td><td>65</td><td>70</td><td>73</td></tr>
+ </table>
+ <span style="font-size: 85%;"><font color="MidnightBlue">lowest</font> : 40 41 42 43 45 ,  <font color="MidnightBlue">highest</font>: 75 77 80 81 82</span> <hr class="thinhr"> <span style="font-weight:bold">Age</span><div style="float: right; text-align: right;"><img src="data:image/png;base64,
+iVBORw0KGgoAAAANSUhEUgAAAF4AAAANCAMAAAAXFikFAAABj1BMVEUAAAABAQECAgIDAwMGBgYHBwcJCQkKCgoSEhIUFBQZGRkbGxscHBwdHR0fHx8gICAiIiIkJCQlJSUnJycqKiorKysuLi4vLy8wMDA0NDQ4ODg6Ojo8PDw9PT0+Pj4/Pz9BQUFCQkJFRUVGRkZISEhMTExSUlJUVFRVVVVWVlZbW1tdXV1gYGBjY2NkZGRlZWVmZmZra2tsbGxtbW1zc3N2dnZ6enp7e3t9fX2AgICCgoKEhISGhoaIiIiJiYmKioqPj4+QkJCRkZGTk5OVlZWWlpaYmJiZmZmbm5ucnJydnZ2enp6fn5+goKCjo6OlpaWnp6eoqKipqamqqqqrq6uxsbGzs7O0tLS1tbW2tra3t7e4uLi6urq7u7u9vb2+vr7ExMTGxsbKysrMzMzNzc3Ozs7R0dHV1dXW1tbY2NjZ2dna2trc3Nzd3d3e3t7g4ODh4eHj4+Pk5OTl5eXm5ubo6Ojp6enr6+vs7Ozu7u7v7+/w8PDx8fHz8/P19fX4+Pj5+fn6+vr7+/v+/v7///8FMxv9AAABUklEQVQ4jWMoxw14tLLMSyQV8aggCBhasALNKCDBqxvMkCGlgl0FcQCH8cwWYOODGNLBxlvrU834tEZM49XEWuqoY3wVkw/Y+EJ3FOPLWcKoYnwpg2uSHdB4J4YaqPEFgtlqYnkMvmQZn40GEhks9dmymQ3NGJK5NBwZIiXkAhl8lIXjGew89NDVEgbIrq/VLwG73pQd6HoHhiqo6xMYYsCuN+JsyW3Ic2mpbyYvcFIYQqPd8BnfxOpky9AgYkW28VpC+IyvZ7CxYajnNKoOINYDCOO9vYg23o+hoKSSeOPLavOUKhTkiTbelyFPSiuTPx+oNa+5OBWf8eXh4oXi2v4MsTLScQx+6gIZDPbGbOXMJtYMOdxangwJkooRDCGqIikMznocxQzm5gzFHHrODCkiqiEMESYGqYyBOnzAssVbFkiEShRJGyWIZkDLm0Lx8HIAX3frLJm8ZIIAAAAASUVORK5CYII=" alt="image" /></div> <style>
+ .hmisctable401240 {
+ border: none;
+ font-size: 85%;
+ }
+ .hmisctable401240 td {
+ text-align: center;
+ padding: 0 1ex 0 1ex;
+ }
+ .hmisctable401240 th {
+ color: MidnightBlue;
+ text-align: center;
+ padding: 0 1ex 0 1ex;
+ font-weight: normal;
+ }
+ </style>
+ <table class="hmisctable401240">
+ <tr><th>n</th><th>missing</th><th>distinct</th><th>Info</th><th>Mean</th><th>Gmd</th><th>.05</th><th>.10</th><th>.25</th><th>.50</th><th>.75</th><th>.90</th><th>.95</th></tr>
+ <tr><td>11004</td><td>0</td><td>31</td><td>0.996</td><td>24.59</td><td>5.41</td><td>17</td><td>19</td><td>21</td><td>24</td><td>28</td><td>31</td><td>33</td></tr>
+ </table>
+ <span style="font-size: 85%;"><font color="MidnightBlue">lowest</font> : 13 14 15 16 17 ,  <font color="MidnightBlue">highest</font>: 40 42 43 44 48</span> <hr class="thinhr">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
+<script type="text/javascript">
+<!--
+    function expand_collapse(id) {
+       var e = document.getElementById(id);
+       var f = document.getElementById(id+"_earrows");
+       if(e.style.display == 'none'){
+          e.style.display = 'block';
+          f.innerHTML = '&#9650';
+       }
+       else {
+          e.style.display = 'none';
+          f.innerHTML = '&#9660';
+       }
+    }
+//-->
+</script>
+<style>
+.earrows {color:silver;font-size:11px;}
+
+fcap {
+ font-family: Verdana;
+ font-size: 12px;
+ color: MidnightBlue
+ }
+
+smg {
+ font-family: Verdana;
+ font-size: 10px;
+ color: 󅒐
+}
+
+hr.thinhr { margin-top: 0.15em; margin-bottom: 0.15em; }
+
+span.xscript {
+position: relative;
+}
+span.xscript sub {
+position: absolute;
+left: 0.1em;
+bottom: -1ex;
+}
+</style>
+ <font color="MidnightBlue"><div align="center"><span style="font-weight:bold">. <br><br> 4  Variables   25740  Observations</span></div></font> <hr class="thinhr"> <span style="font-weight:bold">Sex</span> <style>
+ .hmisctable371343 {
+ border: none;
+ font-size: 85%;
+ }
+ .hmisctable371343 td {
+ text-align: center;
+ padding: 0 1ex 0 1ex;
+ }
+ .hmisctable371343 th {
+ color: MidnightBlue;
+ text-align: center;
+ padding: 0 1ex 0 1ex;
+ font-weight: normal;
+ }
+ </style>
+ <table class="hmisctable371343">
+ <tr><th>n</th><th>missing</th><th>distinct</th><th>value</th></tr>
+ <tr><td>25740</td><td>0</td><td>1</td><td>M</td></tr>
+ </table>
+ <pre style="font-size:85%;">
+ Value          M
+ Frequency  25740
+ Proportion     1
+ </pre>
+ <hr class="thinhr"> <span style="font-weight:bold">Height</span><div style="float: right; text-align: right;"><img src="data:image/png;base64,
+iVBORw0KGgoAAAANSUhEUgAAAHYAAAANCAMAAABLnGohAAABoVBMVEUAAAACAgIDAwMFBQUGBgYICAgJCQkLCwsODg4PDw8RERETExMUFBQWFhYdHR0eHh4hISEiIiIjIyMlJSUoKCgpKSkqKiouLi4wMDA1NTU3Nzc6Ojo7Ozs9PT0+Pj4/Pz9AQEBBQUFFRUVGRkZHR0dLS0tMTExNTU1RUVFSUlJTU1NUVFRYWFhaWlpfX19iYmJlZWVmZmZoaGhpaWlqampubm5vb29wcHBxcXFzc3N1dXV4eHh5eXl6enp7e3t9fX2AgICCgoKDg4OEhISHh4eIiIiJiYmNjY2Ojo6SkpKUlJSampqfn5+hoaGkpKSlpaWqqqqsrKytra2urq6vr6+wsLCxsbGysrKzs7O0tLS2tra3t7e4uLi5ubm6urq7u7u8vLy+vr7AwMDCwsLDw8PFxcXLy8vMzMzOzs7Pz8/S0tLT09PW1tbX19fY2NjZ2dna2trb29vc3Nzd3d3e3t7f39/h4eHj4+Pk5OTn5+fo6Ojp6enr6+vt7e3u7u7v7+/w8PDx8fHy8vL09PT29vb4+Pj5+fn8/Pz9/f3+/v7///+Px9TTAAABj0lEQVQ4jd3U6TNCURgG8Me+JpSIcLOWLiW7qEQkRWQra7giW4Soa0+qv9qZa4wMZuoOX7wfnnPPh/P+5vlywfKe+noSChGvt0jwHooiQYt5veXBblU8fWHj5dN/zU7h6gv7gpF/xJ7FfmadDzxYfyrDZFg/LqPYsS2Rs7qaRHMZgzG//wi99rqTBlNK28ik1jYA+/vnfIC0lbRzbSPGG1p8hSmurRkRQXfKbdNgmUd7SbxwgLBiOtz3RFFeuDh2U5/EevYTz7/CTg4SdtUYzbSM4KWgn2Nd2KWoXSxzbH9BElul2ss+WVmMmlhe7PktiZt7EspKwnYLIjB/sMvfs56i20rlGpgm2QHmlszpsV3rscuERBtoe2xU3qnDabB2BDi2scaH2Y7S2NDppTtxF39bG01iWVaj99UefPpj5vRYsy6EtA3bUrkbjhaJF1Z1cRAGHUL5Wgt8IsUMNmSyDcwoRD5YtPkh6AwIFqut8EpaHHDLpduw0cJjjPflsUUmp/RaNbGQe9g5TLZrWln2FVIBot2Mn8d5AAAAAElFTkSuQmCC" alt="image" /></div> <style>
+ .hmisctable619616 {
+ border: none;
+ font-size: 85%;
+ }
+ .hmisctable619616 td {
+ text-align: center;
+ padding: 0 1ex 0 1ex;
+ }
+ .hmisctable619616 th {
+ color: MidnightBlue;
+ text-align: center;
+ padding: 0 1ex 0 1ex;
+ font-weight: normal;
+ }
+ </style>
+ <table class="hmisctable619616">
+ <tr><th>n</th><th>missing</th><th>distinct</th><th>Info</th><th>Mean</th><th>Gmd</th><th>.05</th><th>.10</th><th>.25</th><th>.50</th><th>.75</th><th>.90</th><th>.95</th></tr>
+ <tr><td>25740</td><td>0</td><td>39</td><td>0.997</td><td>179</td><td>7.388</td><td>169</td><td>170</td><td>175</td><td>179</td><td>183</td><td>188</td><td>190</td></tr>
+ </table>
+ <span style="font-size: 85%;"><font color="MidnightBlue">lowest</font> : 156 157 163 164 165 ,  <font color="MidnightBlue">highest</font>: 195 196 197 198 200</span> <hr class="thinhr"> <span style="font-weight:bold">Weight</span><div style="float: right; text-align: right;"><img src="data:image/png;base64,
+iVBORw0KGgoAAAANSUhEUgAAAJcAAAANCAMAAACTvAxuAAAB/lBMVEUAAAABAQECAgIDAwMEBAQFBQUGBgYHBwcKCgoLCwsODg4PDw8SEhITExMVFRUWFhYYGBgZGRkaGhobGxscHBweHh4fHx8gICAhISEjIyMkJCQlJSUnJycqKiouLi4yMjI1NTU2NjY4ODg5OTk6Ojo7Ozs9PT0+Pj4/Pz9AQEBCQkJERERGRkZISEhKSkpLS0tMTExOTk5PT09RUVFSUlJTU1NUVFRWVlZXV1dYWFhZWVlaWlpdXV1eXl5hYWFiYmJjY2NkZGRmZmZoaGhqamptbW1ubm5vb29wcHBxcXFycnJzc3N0dHR1dXV2dnZ3d3d4eHh5eXl6enp7e3t8fHx9fX1+fn5/f3+AgICBgYGCgoKDg4OEhISFhYWGhoaIiIiJiYmKioqMjIyNjY2QkJCTk5OUlJSVlZWWlpaXl5eYmJiZmZmbm5udnZ2enp6fn5+goKChoaGioqKkpKSlpaWmpqapqamrq6utra2ysrKzs7O1tbW3t7e5ubm6urq/v7/BwcHCwsLDw8PFxcXJycnKysrLy8vMzMzNzc3Pz8/Q0NDS0tLT09PU1NTV1dXW1tbZ2dna2trb29vc3Nzd3d3e3t7f39/j4+Pk5OTl5eXm5ubp6enr6+vt7e3y8vL09PT19fX29vb39/f4+Pj5+fn6+vr7+/v8/Pz9/f3///8pelKuAAAB+0lEQVQ4jWOYQxjMYggiQhV1AcNKwmApQwyQXFG+mAi11ALEu6uToQZNfNkyGjgICoh3VxtDFZq4mSUNHAQFxLprnmYphrvUtWjhIgjA465oLygD5K6JDNFAd80ORE5jNHXXRJxAQw7K6GfwnFjH4M6QPTGVoXrihFaYAgUl3JopBXjCS09x5UqrKJdSpPAqZ+hZmcsBCrN8T0h4GSYbl9AkvPC7S9ZcyMmliiE6qQHoroqMUobagESGScCMaSMJcZeoPbcnXd0VZ6mnOG06yF2c3gxBDBFAd8UyxDBEMoQyBLLN7bORXLYE5q6UPrCO5VXLF9LOXV2WS4HkwplWMnqKmgZQdwUyhAPdBYIRQHf5M3sL2kja66hrzV8Mchdj5MqVc1eubGJIZ5ncCTJj0QyquCute+UC2XqwX1dMyGRoz2uJ9ZUEuUtFB4e7XHltJA3l1bU0HEDuYggRKmItsy0DSicwNgYUSoYKzwO6LCdr6szKjpUrU3snL52ICMolU4hyF7AuYnPnT2QIY8sWaZ5TzBjM4MXgymbHZyKlLa8gxm8kYMvhwuDB4MMQAHRdIIMfgziDK7Mjj7m4rpyymqyBiDWXM4MbUNofLB3A4AvkOXM5SnuaqikrGEpY6KeyuLNGMMWzFqh2gWu+GPZ8U0gd6OSPtWosMQISAHhJSBAvcjIEAAAAAElFTkSuQmCC" alt="image" /></div> <style>
+ .hmisctable125468 {
+ border: none;
+ font-size: 85%;
+ }
+ .hmisctable125468 td {
+ text-align: center;
+ padding: 0 1ex 0 1ex;
+ }
+ .hmisctable125468 th {
+ color: MidnightBlue;
+ text-align: center;
+ padding: 0 1ex 0 1ex;
+ font-weight: normal;
+ }
+ </style>
+ <table class="hmisctable125468">
+ <tr><th>n</th><th>missing</th><th>distinct</th><th>Info</th><th>Mean</th><th>Gmd</th><th>.05</th><th>.10</th><th>.25</th><th>.50</th><th>.75</th><th>.90</th><th>.95</th></tr>
+ <tr><td>25740</td><td>0</td><td>59</td><td>0.998</td><td>76.13</td><td>11.06</td><td>63</td><td>65</td><td>70</td><td>74</td><td>82</td><td>90</td><td>95</td></tr>
+ </table>
+ <span style="font-size: 85%;"><font color="MidnightBlue">lowest</font> :  53  54  55  56  57 ,  <font color="MidnightBlue">highest</font>: 106 110 111 115 127</span> <hr class="thinhr"> <span style="font-weight:bold">Age</span><div style="float: right; text-align: right;"><img src="data:image/png;base64,
+iVBORw0KGgoAAAANSUhEUgAAAGEAAAANCAMAAACO7vCwAAABg1BMVEUAAAABAQECAgIDAwMEBAQMDAwPDw8RERESEhITExMYGBgaGhocHBwdHR0fHx8iIiIlJSUoKCgrKysvLy8wMDAxMTEyMjI0NDQ1NTU4ODg5OTk8PDw9PT0+Pj4/Pz9AQEBBQUFDQ0NFRUVHR0dLS0tNTU1PT09RUVFUVFRVVVVbW1tcXFxeXl5kZGRlZWVnZ2dqampubm5vb29xcXFycnJzc3N0dHR7e3t8fHx9fX1+fn6AgICCgoKDg4OEhISFhYWMjIyOjo6Pj4+Tk5OVlZWWlpaYmJiZmZmampqcnJydnZ2fn5+goKCioqKjo6OlpaWoqKipqamrq6uurq6vr6+wsLC0tLS1tbW6urq7u7u+vr7BwcHCwsLExMTFxcXGxsbHx8fJycnKysrLy8vOzs7R0dHT09PU1NTV1dXX19fY2Nja2trc3Nze3t7f39/g4ODh4eHi4uLl5eXm5ubo6Ojr6+vt7e3u7u7v7+/w8PD09PT5+fn7+/v8/Pz9/f3+/v7///9RX8qOAAABS0lEQVQ4jWMoxQmyhOMcGNKTQnCrIAowNOAAgl4pDKFuDMX6fFCBTFwqCQCcNrBYQGzQ5WlIywXyUxhiqWmDrSOyDeKa9VKhsQwRVLMh1adBShnZBmH1agZ7atpgxInDhhJfsmzIxgA6bNmiMtnMBqEMrjYMcZpc2YJKGQwmAQzelgwpzmaY6gkAdD/km1YbcuDwgxNDhZYASFFMFQWh5MeQQ8AGQ/cqRpdKa6ItQbfBl6ANAloVDE6RDHGk2lBbAyLz6om0IYL43AG2oa6yQUuzQcazkCmMeBv8eeuM1Rqk7RoCyxvyQKZUlmG3oTRBNseKq1RWspTVIJ7Bw4UhWY+9VEKhlMUkisEXWC5pc5cKqRQxmIczBNkx5Gjwl/Jr5DDYBTGEmzMUqQiVcmtnMjgFMya6iZWqKpSK2BXIR8fK5UFKJEWvHNmEUgD6zfM07L/s0wAAAABJRU5ErkJggg==" alt="image" /></div> <style>
+ .hmisctable193247 {
+ border: none;
+ font-size: 85%;
+ }
+ .hmisctable193247 td {
+ text-align: center;
+ padding: 0 1ex 0 1ex;
+ }
+ .hmisctable193247 th {
+ color: MidnightBlue;
+ text-align: center;
+ padding: 0 1ex 0 1ex;
+ font-weight: normal;
+ }
+ </style>
+ <table class="hmisctable193247">
+ <tr><th>n</th><th>missing</th><th>distinct</th><th>Info</th><th>Mean</th><th>Gmd</th><th>.05</th><th>.10</th><th>.25</th><th>.50</th><th>.75</th><th>.90</th><th>.95</th></tr>
+ <tr><td>25740</td><td>0</td><td>32</td><td>0.995</td><td>25.47</td><td>5.103</td><td>19</td><td>20</td><td>22</td><td>25</td><td>28</td><td>32</td><td>33</td></tr>
+ </table>
+ <span style="font-size: 85%;"><font color="MidnightBlue">lowest</font> : 14 15 16 17 18 ,  <font color="MidnightBlue">highest</font>: 41 42 43 46 47</span> <hr class="thinhr">
+<p>As we can see, the distribution of the variables <strong>Height</strong> and <strong>Weight</strong> in men and women differs from normal, which means that parametric criteria cannot be applied to them. Now let’s apply test to identify statistically significant differences. For <strong>Weight</strong> and <strong>Height</strong> values we will use Wilcox test, while <strong>Age</strong> will be tested with Welch t test.</p>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  res_14_women$Age and res_14_men$Age
+## t = -16.08, df = 19793, p-value &lt; 2.2e-16
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  -0.9814653 -0.7681876
+## sample estimates:
+## mean of x mean of y 
+##  24.59324  25.46807</code></pre>
+<pre><code>## 
+##  Wilcoxon rank sum test with continuity correction
+## 
+## data:  res_14_women$Age and res_14_men$Age
+## W = 126850176, p-value &lt; 2.2e-16
+## alternative hypothesis: true location shift is not equal to 0</code></pre>
+<pre><code>## 
+##  Wilcoxon rank sum test with continuity correction
+## 
+## data:  res_14_women$Age and res_14_men$Age
+## W = 126850176, p-value &lt; 2.2e-16
+## alternative hypothesis: true location shift is not equal to 0</code></pre>
+<p>All three tests showed significant differences, since the p-value was much less than 0.05 (2.2e-16), which means that height, weight and age statistically significantly differ from each other. At the end, we will compile a table that will display: mean, standard deviation and median for each gender for each variable.</p>
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
@@ -2108,7 +2559,17 @@ M
 </div>
 <div id="task-15" class="section level3">
 <h3>Task 15</h3>
-<p>В стадии разработки. Хочется показать, что количество медалей зависит от команды!</p>
+<p>Take a look at the variables <strong>Medal</strong> and <strong>Team</strong>, we are wondering if there is a correlation between them? Let us hypothesize that the number of medals depends on the team that competes at the Olympic Games. First, remove the athletes for whom the team or medal they received is unknown. Our data are presented as factors, we should immediately use Spearman’s test for rank correlation</p>
+<pre><code>## 
+##  Spearman&#39;s rank correlation rho
+## 
+## data:  rank(t15_olympics_data$Team) and rank(t15_olympics_data$Medal)
+## S = 3.551e+15, p-value &lt; 2.2e-16
+## alternative hypothesis: true rho is not equal to 0
+## sample estimates:
+##        rho 
+## -0.0354984</code></pre>
+<p>According to Spearman’s method, the correlation coefficient is 0.01128128, which indicates a weak relationship between the <code>Team</code> and <code>Medal</code> variables, and the <code>p-value</code> turned out to be a little bit less than 0.05, which allows us to say with confidence that the coefficient is statistically significantly different from zero.</p>
 </div>
 </div>
 
